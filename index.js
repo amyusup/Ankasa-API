@@ -108,5 +108,6 @@ app.get(
 app.use(express.static("public"));
 
 server.listen( process.env.PORT || 8000, () => {
-  console.log(`Server running on PORT ${process.env.PORT || 8000}`);
+  console.log(`Server running on PORT ${process.env.PORT || 8000
+  }`);
 });
