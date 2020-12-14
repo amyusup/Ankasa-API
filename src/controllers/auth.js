@@ -57,7 +57,8 @@ module.exports = {
       const setData = req.body;
       const checkUser = await authModels.checkUser(setData);
       if (checkUser[0]) {
-        return response(res, 403, { message: "Email already exist" });
+        // return response(res, 403, { message: "Email already exist" });
+         response(res, 403, { message: "Email already exist" });
       }
       const salt = bcrypt.genSaltSync(10);
       const hash = bcrypt.hashSync(req.body.password, salt);
