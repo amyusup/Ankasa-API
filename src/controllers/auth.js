@@ -57,8 +57,8 @@ module.exports = {
       const setData = req.body;
       const checkUser = await authModels.checkUser(setData);
       if (checkUser[0]) {
-        // return response(res, 403, { message: "Email already exist" });
-         response(res, 403, { message: "Email already exist" });
+        // return response(res, 403, "Email already exist");
+        return response(res, 403, { message: "Email already exist" });
       }
       const salt = bcrypt.genSaltSync(10);
       const hash = bcrypt.hashSync(req.body.password, salt);
@@ -69,7 +69,8 @@ module.exports = {
       const result = await authModels.postRegister(newData);
       response(res, 200, { data: result, message: "Register Success" });
     } catch (error) {
-      response(res, 500, { message: "Register Failed" });
+      response(res, 500, { message: error.message });
+      // response(res, 500, error);
     }
   },
 
