@@ -21,16 +21,21 @@ module.exports = {
     try {
       const { id } = req.token;
       const result = await userModel.getUserById(id);
-      const address = result[0].address.split(",");
-      result[0].city = address[0];
-      result[0].country = address[1];
+      if(result[0].address){
+        const address = result[0].address.split(",");
+        result[0].city = address[0];
+        result[0].country = address[1];
+      }
       delete result[0].password;
       if (result[0]) {
         response(res, 200, result);
+        console.log(result)
       } else {
+        console.log('failed get user')
         response(res, 400, { message: "User not found" });
       }
     } catch (e) {
+      console.log(e)
       response(res, 500, { message: "Failed get data user" });
     }
   },
