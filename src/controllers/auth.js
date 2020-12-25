@@ -8,15 +8,15 @@ module.exports = {
     try {
       const setData = req.body;
       console.log(setData)
-      const result = await authModels.checkUser(setData);
+      const result = await authModels.checkUser(setData.email);
       if (!result[0]) {
         res.status(401).send({
           message: "Email Not Found",
         });
       }
       let check = true;
+      await authModels.postDevice(setData.device_token, setData.email) // after edit
       if (result[0].role != 6) {
-        await authModels.postDevice(setData.device_token, setData.email)
         check = bcrypt.compareSync(setData.password, result[0].password);
       }
       if (check) {
@@ -55,7 +55,9 @@ module.exports = {
   postRegister: async function (req, res) {
     try {
       const setData = req.body;
-      const checkUser = await authModels.checkUser(setData);
+      // console.log(setData.email)
+      const checkUser = await authModels.checkUser(setData.email);
+      // console.log(checkUser)
       if (checkUser[0]) {
         // return response(res, 403, "Email already exist");
         return response(res, 403, { message: "Email already exist" });

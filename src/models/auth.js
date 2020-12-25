@@ -4,7 +4,7 @@ module.exports = {
   checkUser: function (setData) {
     return new Promise((resolve, reject) => {
       db.query(
-        `SELECT * FROM users WHERE email='${setData.email}'`,
+        `SELECT * FROM users WHERE email='${setData}'`,
         (err, result) => {
           if (!err) {
             resolve(result);
