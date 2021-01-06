@@ -80,7 +80,8 @@ module.exports = {
   forgotPassword: async function (req, res) {
     try {
       let setData = req.body;
-      const check = await authModels.checkUser(setData);
+      console.log(req.body)
+      const check = await authModels.checkUser(setData.email);
       if (check.length) {
         const salt = bcrypt.genSaltSync(10);
         const hash = bcrypt.hashSync(setData.password, salt);
@@ -112,22 +113,11 @@ module.exports = {
     }
   },
 
-  makeVerificationCode: function (length) {
-    var result = "";
-    var characters =
-      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    var charactersLength = characters.length;
-    for (var i = 0; i < length; i++) {
-      result += characters.charAt(Math.floor(Math.random() * charactersLength));
-    }
-    return result;
-  },
 
-  //  console.log(makeid(5));
   sendEmail: function (req, res) {
     try {
       const { mailTo } = req.body
-
+      console.log(req.body)
       var verification = "";
       var characters =
         "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -157,7 +147,8 @@ module.exports = {
           response(res, 500, { message: error });
         } else {
           console.log("Email sent: " + info.response);
-          response(res, 200, { message: "Email sent: " + info.response });
+          // response(res, 200, { message: "Email sent: " + info.response });
+          response(res, 200, { data: verification, email:mailTo });
         }
       });
     } catch (error) {
