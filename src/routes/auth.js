@@ -6,5 +6,6 @@ router
     .post('/login', authController.postLogin)
     .post('/register', authController.postRegister)
     .patch('/forgot', authController.forgotPassword)
+    .post('/sendEmail', authController.sendEmail)
 
 module.exports = router

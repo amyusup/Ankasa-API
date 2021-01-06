@@ -2,12 +2,13 @@ const authModels = require("../models/auth");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { response } = require("../helpers/");
+var nodemailer = require("nodemailer");
 
 module.exports = {
   postLogin: async function (req, res) {
     try {
       const setData = req.body;
-      console.log(setData)
+      console.log(setData);
       const result = await authModels.checkUser(setData.email);
       if (!result[0]) {
         res.status(401).send({
@@ -15,7 +16,7 @@ module.exports = {
         });
       }
       let check = true;
-      await authModels.postDevice(setData.device_token, setData.email) // after edit
+      await authModels.postDevice(setData.device_token, setData.email); // after edit
       if (result[0].role != 6) {
         check = bcrypt.compareSync(setData.password, result[0].password);
       }
@@ -48,7 +49,7 @@ module.exports = {
         });
       }
     } catch (error) {
-      console.log(error)
+      console.log(error);
       response(res, 500, { message: error.message });
     }
   },
@@ -106,6 +107,59 @@ module.exports = {
       } else {
         response(res, 200, { message: "Email Not Found" });
       }
+    } catch (error) {
+      response(res, 500, { message: error.message });
+    }
+  },
+
+  makeVerificationCode: function (length) {
+    var result = "";
+    var characters =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    var charactersLength = characters.length;
+    for (var i = 0; i < length; i++) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+  },
+
+  //  console.log(makeid(5));
+  sendEmail: function (req, res) {
+    try {
+      const { mailTo } = req.body
+
+      var verification = "";
+      var characters =
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+      var charactersLength = characters.length;
+      for (var i = 0; i < 5; i++) {
+        verification += characters.charAt(Math.floor(Math.random() * charactersLength));
+      }
+
+      var transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+          user: "ankasa.surel@gmail.com",
+          pass: "ankasa.pass",
+        },
+      });
+
+      var mailOptions = {
+        from: "ankasa.surel@gmail.com",
+        to: mailTo,
+        subject: "Verification code Ankasa Mobile",
+        text: `We have received a request to forget your password, immediately confirm with the following verification code : ${verification}`,
+      };
+
+      transporter.sendMail(mailOptions, function (error, info) {
+        if (error) {
+          console.log(error);
+          response(res, 500, { message: error });
+        } else {
+          console.log("Email sent: " + info.response);
+          response(res, 200, { message: "Email sent: " + info.response });
+        }
+      });
     } catch (error) {
       response(res, 500, { message: error.message });
     }
